@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-header" data-th-content="${_csrf.headerName}">
+    <meta name="csrf-parameter" data-th-content="${_csrf.parameterName}">
+    <meta name="csrf-token" data-th-content="${_csrf.token}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        #defaultSomeForm {
+            max-width: 400px; /* Размер, похожий на модальное окно */
+        }
+
+        /* Базовые стили для кнопок */
+        #adminButton, #userButton {
+            background-color: white;   /* Белый фон для неактивных кнопок */
+            color: blue;               /* Синий текст для неактивных кнопок */
+            transition: background-color 0.3s ease, color 0.3s ease;  /* Плавный переход для фона и текста */
+        }
+
+        /* Активные кнопки */
+        #adminButton.active, #userButton.active {
+            background-color: blue;    /* Синий фон для активной кнопки */
+            color: white;              /* Белый текст для активной кнопки */
+        }
+
+        #adminView, #userView {
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: green;
+            color: white;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .col-10 {
+            background-color: #f8f9fa; /* Светлый фон правой части */
+        }
+
+        /* Центрирование формы и кнопки */
+        #newUserForm .row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .col-2 {
+            display: flex; /* Активируем Flexbox */
+            flex-direction: column; /* Располагаем элементы по вертикали */
+            align-items: center; /* Центрируем кнопки по горизонтали */
+            justify-content: flex-start; /* Располагаем кнопки сверху */
+        }
+
+        .btn-short {
+            width: 75%; /* Ширина кнопок - 75% от родителя */
+            margin-bottom: 1rem; /* Отступ между кнопками */
+        }
+    </style>
+
+    <title>User Management</title>
+</head>
+<body>
+
+<div class="container-fluid">
+    <!-- Верхняя панель -->
+    <div class="navbar d-flex justify-content-between align-items-center" style="background-color: #333; color: white; padding: 10px 20px;">
+        <div>
+            <span class="email" th:text="${loggedInUser.email}" style="font-weight: bold;"></span>
+            <span th:text="' with roles: ' + ${loggedInRoles}"></span>
+        </div>
+        <div>
+            <form th:action="@{/logout}" th:method="POST">
+                <input type="submit" value="Logout" class="btn btn-secondary" />
+            </form>
+        </div>
+    </div>
+
+    </div>
+    <div class="row" style="height: 100vh;">
+        <!-- Sidebar -->
+        <div class="col-2 border-end">
+            <button class="btn btn-outline-primary active my-2 btn-short" id="adminButton">Admin</button>
+            <button class="btn btn-outline-primary my-2 btn-short" id="userButton">User</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-10">
+            <div id="adminView">
+                <h1>Admin Panel</h1>
+                <!-- Admin View Tabs -->
+                <ul class="nav nav-tabs" id="adminTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="usersTableTab" href="#usersTable" data-bs-toggle="tab">Users Table</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="newUserTab" href="#newUserForm" data-bs-toggle="tab">New User</a>
+                    </li>
+                </ul>
+                <div class="tab-content mt-3">
+                    <div class="tab-pane fade show active" id="usersTable">
+                        <h2>All Users</h2>
+                        <table class="table table-striped" id="mainTableWithUsers">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Age</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Users will be dynamically loaded -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="newUserForm">
+                        <h2>Add new User</h2>
+                        <div class="row">
+                            <!-- Центрирование формы -->
+                            <div class="col-md-4">
+                                <form id="defaultSomeForm" class="p-3">
+                                    <input class="form-control my-2" id="AddNewUserFirstName" type="text" placeholder="First Name">
+                                    <input class="form-control my-2" id="AddNewUserLastName" type="text" placeholder="Last Name">
+                                    <input class="form-control my-2" id="AddNewUserAge" type="number" placeholder="Age">
+                                    <input class="form-control my-2" id="AddNewUserEmail" type="email" placeholder="Email">
+                                    <input class="form-control my-2" id="AddNewUserPassword" type="password" placeholder="Password">
+                                    <input class="form-control my-2" id="AddNewUserConfirmPassword" type="password" placeholder="Confirm Password">
+                                    <label for="AddNewUserRoles">Select Roles</label>
+                                    <select class="form-control my-2" id="AddNewUserRoles" multiple></select>
+                                    <div class="text-center">
+                                        <button class="btn btn-success mt-2" id="addNewUserButton" type="button">Add New User</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="userView" class="d-none">
+                <h1>User information-page</h1>
+                <div class="tab-pane fade show active" id="userTable">
+                    <h2>About user</h2>
+                    <table class="table table-striped" id="tableWithUser">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Age</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- Отображение данных пользователя -->
+                        <tr>
+                            <td th:text="${loggedInUser.id}"></td>
+                            <td th:text="${loggedInUser.firstName}"></td>
+                            <td th:text="${loggedInUser.lastName}"></td>
+                            <td th:text="${loggedInUser.age}"></td>
+                            <td th:text="${loggedInUser.email}"></td>
+                            <td>
+                                <ul>
+                                    <li th:each="role : ${loggedInUser.roles}" th:text="${role.name}"></li>
+                                </ul>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- модальное окно для редактирования пользователя. -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <div class="mb-3">
+                            <label for="editUserId" class="form-label">Id</label>
+                            <input type="text" class="form-control" id="editUserId" readonly style="background-color: #e9ecef;" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserFirstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="editUserFirstName" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserLastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="editUserLastName">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserAge" class="form-label">Age</label>
+                            <input type="number" class="form-control" id="editUserAge">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editUserEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="editUserPassword">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserPasswordConfirm" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="editUserPasswordConfirm">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUserRoles" class="form-label">Roles</label>
+                            <select class="form-select" id="editUserRoles" multiple></select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveEditUserButton">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- модальное окно удаления пользователя. -->
+    <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteUserModalLabel">Delete User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="deleteUserForm">
+                        <div class="mb-3">
+                            <label for="deleteUserId" class="form-label">Id</label>
+                            <input type="text" class="form-control" id="deleteUserId" readonly style="background-color: #e9ecef;" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="deleteUserFirstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="deleteUserFirstName" readonly style="background-color: #e9ecef;">
+                        </div>
+                        <div class="mb-3">
+                            <label for="deleteUserLastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="deleteUserLastName" readonly style="background-color: #e9ecef;">
+                        </div>
+                        <div class="mb-3">
+                            <label for="deleteUserAge" class="form-label">Age</label>
+                            <input type="number" class="form-control" id="deleteUserAge" readonly style="background-color: #e9ecef;">
+                        </div>
+                        <div class="mb-3">
+                            <label for="deleteUserEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="deleteUserEmail" readonly style="background-color: #e9ecef;">
+                        </div>
+                        <div class="mb-3">
+                            <label for="deleteUserRoles" class="form-label">Roles</label>
+                            <input type="text" class="form-control" id="deleteUserRoles" readonly style="background-color: #e9ecef;">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="deleteUserButton">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Инициализация начального состояния - Admin View виден по умолчанию
+            document.getElementById('adminButton').click();
+        });
+    </script>
+    <script src="/js/app.js"></script>
+</body>
+</html>
