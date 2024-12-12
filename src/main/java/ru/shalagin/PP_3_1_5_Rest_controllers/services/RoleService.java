@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.shalagin.PP_3_1_5_Rest_controllers.model.Role;
 import ru.shalagin.PP_3_1_5_Rest_controllers.repositories.RoleRepository;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +20,7 @@ public class RoleService {
                 .orElseThrow(() -> new RuntimeException("Роль " + roleName + " не найдена!\n"));
     }
     public boolean create(String roleName) {
-        Optional<Role> roleFromBD = roleRepository.findByName(roleName);
-        if (!roleFromBD.isEmpty()) {
+        if (roleRepository.findByName(roleName).isPresent()) {
             return false;
         }
         roleRepository.save(new Role(roleName));

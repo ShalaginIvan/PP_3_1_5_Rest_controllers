@@ -14,8 +14,6 @@ import ru.shalagin.PP_3_1_5_Rest_controllers.services.UserService;
 import ru.shalagin.PP_3_1_5_Rest_controllers.util.*;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -27,6 +25,7 @@ public class AdminController {
     private final RoleService roleService;
 
     private final PasswordEncoder passwordEncoder;
+
     private final Check check;
 
     @GetMapping("/roles")
@@ -56,14 +55,6 @@ public class AdminController {
         check.all(user, bindingResult); // выполняем проверки валидации, ролей и пароля
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        // Получаем роли из базы данных
-        Set<Role> roles = user.getRoles().stream()
-                .map(role -> roleService.get(role.getName()))
-                .collect(Collectors.toSet());
-
-        user.setRoles(roles);
-
         userService.save(user); // Сохраняем пользователя с проверкой уникальности
 
         return ResponseEntity.ok(HttpStatus.OK);
