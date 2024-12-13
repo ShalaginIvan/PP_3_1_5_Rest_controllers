@@ -14,7 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import ru.shalagin.PP_3_1_5_Rest_controllers.services.UserService;
+import ru.shalagin.PP_3_1_5_Rest_controllers.services.UserDetailsServiceImp;
 
 import java.io.IOException;
 
@@ -22,7 +22,7 @@ import java.io.IOException;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final UserService userService;
+    private final UserDetailsServiceImp userDetailsServiceImp;
 
     // ВНИМАНИЕ! по умолчанию включен CSRF, он добавляется в HTTP запросы
     @Bean
@@ -55,7 +55,7 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userService)
+        authenticationManagerBuilder.userDetailsService(userDetailsServiceImp)
                 .passwordEncoder(getPasswordEncoder());
         return authenticationManagerBuilder.build();
     }

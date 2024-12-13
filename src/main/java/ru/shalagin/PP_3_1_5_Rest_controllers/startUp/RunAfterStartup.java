@@ -3,7 +3,6 @@ package ru.shalagin.PP_3_1_5_Rest_controllers.startUp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.shalagin.PP_3_1_5_Rest_controllers.model.User;
 import ru.shalagin.PP_3_1_5_Rest_controllers.services.RoleService;
@@ -19,7 +18,6 @@ public class RunAfterStartup {
 
     private final UserService userService;
     private final RoleService roleService;
-    private final PasswordEncoder passwordEncoder;
 
     @EventListener(ApplicationReadyEvent.class)
     public void runAfterStartup() {
@@ -50,13 +48,9 @@ public class RunAfterStartup {
             User user4 = new User("Олег", "Иванов", 50, "oleg-ivanov@gmail.com", "1234");
             user4.setRoles(Collections.singleton(roleService.get("ROLE_ADMIN")));
 
-            user1.setPassword(passwordEncoder.encode(user1.getPassword()));
             userService.save(user1);
-            user2.setPassword(passwordEncoder.encode(user2.getPassword()));
             userService.save(user2);
-            user3.setPassword(passwordEncoder.encode(user3.getPassword()));
             userService.save(user3);
-            user4.setPassword(passwordEncoder.encode(user4.getPassword()));
             userService.save(user4);
 
             System.out.println("A new database has been created!");

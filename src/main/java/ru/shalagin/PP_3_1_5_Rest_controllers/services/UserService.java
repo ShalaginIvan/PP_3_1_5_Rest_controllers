@@ -1,9 +1,7 @@
 package ru.shalagin.PP_3_1_5_Rest_controllers.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.shalagin.PP_3_1_5_Rest_controllers.model.Role;
@@ -16,20 +14,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
-
+public class UserService {
     private final UserRepository userRepository;
-
     private final RoleService roleService;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUserName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found;\n"));
-    }
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public User getById(Long id) {
@@ -56,16 +47,22 @@ public class UserService implements UserDetailsService {
 
         user.setRoles(roles);
 
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
     @Transactional
     public void update(User user) {
+        // проверяем, что такой пользователь существует
+        userRepository.findById(user.getId()).orElseThrow(UserNotFoundException::new);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
     @Transactional
     public void delete(Long id) {
+        // проверяем, что такой пользователь существует
+        userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         userRepository.deleteById(id);
     }
 

@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.shalagin.PP_3_1_5_Rest_controllers.model.Role;
@@ -23,8 +22,6 @@ public class AdminController {
     private final UserService userService;
 
     private final RoleService roleService;
-
-    private final PasswordEncoder passwordEncoder;
 
     private final Check check;
 
@@ -54,7 +51,6 @@ public class AdminController {
 
         check.all(user, bindingResult); // выполняем проверки валидации, ролей и пароля
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.save(user); // Сохраняем пользователя с проверкой уникальности
 
         return ResponseEntity.ok(HttpStatus.OK);
@@ -65,7 +61,6 @@ public class AdminController {
 
         check.all(user, bindingResult); // выполняем проверки валидации, ролей и пароля
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.update(user); // Сохраняем пользователя без проверки уникальности
 
         return ResponseEntity.ok(HttpStatus.OK);
