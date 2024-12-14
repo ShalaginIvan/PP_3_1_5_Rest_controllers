@@ -56,7 +56,7 @@ public class AdminController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PostMapping("/users/update")
+    @PutMapping("/users/update")
     public ResponseEntity<HttpStatus> update(@RequestBody @Valid User user, BindingResult bindingResult) {
 
         check.all(user, bindingResult); // выполняем проверки валидации, ролей и пароля
@@ -66,7 +66,7 @@ public class AdminController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PostMapping("/user/delete") // пример запроса для удаления user с id=6 - http://localhost:8080/user/delete?id=6
+    @DeleteMapping("/user/delete") // пример запроса для удаления user с id=6 - http://localhost:8080/user/delete?id=6
     public ResponseEntity<HttpStatus> delete(@RequestParam("id") Long id) {
 
         userService.delete(id);

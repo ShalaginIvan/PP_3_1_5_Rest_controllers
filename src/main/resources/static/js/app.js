@@ -17,13 +17,13 @@ const userFetchService = {
         }),
     updateUser: async (user) =>
         await fetch(`http://localhost:8080/admin/users/update`, {
-            method: 'POST',
+            method: 'PUT',
             headers: headers,
             body: JSON.stringify(user),
         }),
     deleteUser: async (id) =>
         await fetch(`http://localhost:8080/admin/user/delete?id=${id}`, {
-            method: 'POST',
+            method: 'DELETE',
             headers: headers,
         }),
     getAllRoles: async () => await fetch('http://localhost:8080/admin/roles'),
